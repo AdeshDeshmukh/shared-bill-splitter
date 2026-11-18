@@ -1,7 +1,9 @@
 ### Context & Summary
+
 <!-- 2-4 sentences explaining what this PR accomplishes and why -->
 
 ### Scope & Phase
+
 - [ ] **Phase 1:** Database Schema & Named Constraints
 - [ ] **Phase 2:** Part 1 — Homes & Members API
 - [ ] **Phase 3:** Part 2 — Bills & Balances API (Integer Split Math)
@@ -12,11 +14,13 @@
 ---
 
 ### Technical Decisions & Invariants
+
 <!-- What design choices were made in this PR, and why? What alternatives were rejected? -->
 
 ---
 
 ### Edge Cases Handled
+
 <!-- Check all that apply to this PR's scope -->
 - [ ] Home with no members (HTTP 422)
 - [ ] Invalid / non-positive / fractional monetary amounts (HTTP 422)
@@ -29,16 +33,20 @@
 ---
 
 ### Verification & Test Evidence
+
 <!-- Paste the commands executed and test output summaries -->
 - **Tests (`pnpm test`):**
+
   ```text
   <!-- Paste test output here -->
   ```
 - **Linter & Formatter (`pnpm check`):**
+
   ```text
   <!-- Paste Biome output here -->
   ```
 - **Type Safety (`pnpm typecheck`):**
+
   ```text
   <!-- Paste TypeScript compiler output here -->
   ```
@@ -46,6 +54,7 @@
 ---
 
 ### Quality Checklist
+
 - [ ] Strict TypeScript enforced — zero `any` types
 - [ ] All error responses strictly match `{ "error": "message" }`
 - [ ] Database constraints are named and defensible
