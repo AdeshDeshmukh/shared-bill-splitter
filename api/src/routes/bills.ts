@@ -14,7 +14,7 @@ import { splitCents } from '../lib/split'
 const bills = new Hono<{ Bindings: Env }>()
 
 const createBillBody = z.object({
-  title: z.string().min(1, 'title is required'),
+  title: z.string().trim().min(1, 'title is required'),
   totalCents: z
     .number()
     .refine((v) => Number.isInteger(v) && v > 0, 'total is not a positive whole number'),
@@ -25,8 +25,16 @@ bills.post(
   '/:homeId/bills',
   zValidator('json', createBillBody, (result, c) => {
     if (!result.success) {
-      // The assignment specification explicitly demands 422 for non-positive or non-integer totals
-      return c.json({ error: 'total is not a positive whole number' }, 422)
+      const hasTotalIssue = result.error.issues.some(
+        (issue) =>
+          issue.path.includes('totalCents') ||
+          issue.message.includes('total') ||
+          issue.path.length === 0,
+      )
+      if (hasTotalIssue) {
+        return c.json({ error: 'total is not a positive whole number' }, 422)
+      }
+      return c.json({ error: result.error.issues[0]?.message ?? 'invalid request' }, 400)
     }
   }),
   async (c) => {
@@ -39,11 +47,6 @@ bills.post(
     const members = await getMembersOrdered(c.env.DB, homeId)
     if (members.length === 0) {
       return c.json({ error: 'home has no members' }, 422)
-    }
-
-    // Guard against amounts that cannot give at least 1 cent to each member
-    if (totalCents < members.length) {
-      return c.json({ error: 'total is not a positive whole number' }, 422)
     }
 
     const amounts = splitCents(totalCents, members.length)
