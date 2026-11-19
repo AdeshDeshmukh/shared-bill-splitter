@@ -7,9 +7,10 @@ const payments = new Hono<{ Bindings: Env }>()
 payments.post('/bills/:billId/shares/:shareId/pay', async (c) => {
   const billId = c.req.param('billId')
   const shareId = c.req.param('shareId')
-  const idempotencyKey = c.req.header('Idempotency-Key')
+  const rawKey = c.req.header('Idempotency-Key')
+  const idempotencyKey = rawKey?.trim()
 
-  // HTTP 400 — Idempotency-Key header is mandatory
+  // HTTP 400 — Idempotency-Key header is mandatory and non-empty
   if (!idempotencyKey) {
     return c.json({ error: 'Idempotency-Key header is required' }, 400)
   }
@@ -49,8 +50,23 @@ payments.post('/bills/:billId/shares/:shareId/pay', async (c) => {
   // Atomic conditional UPDATE: only succeeds if paid_at IS NULL at write serialization time.
   const result = await payShare(c.env.DB, shareId, idempotencyKey)
 
-  // If a concurrent request won the write race, result.changed will be false
+  // If a concurrent request won the write race, verify if it was the SAME idempotency key
   if (!result.changed) {
+    const isSameKey = await findIdempotencyKey(c.env.DB, shareId, idempotencyKey)
+    if (isSameKey) {
+      const updatedShare = await findShare(c.env.DB, shareId)
+      if (updatedShare) {
+        return c.json(
+          {
+            id: updatedShare.id,
+            memberId: updatedShare.memberId,
+            amountCents: updatedShare.amountCents,
+            paidAt: updatedShare.paidAt,
+          },
+          200,
+        )
+      }
+    }
     return c.json({ error: 'share already paid with a different key' }, 409)
   }
 

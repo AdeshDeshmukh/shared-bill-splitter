@@ -6,11 +6,11 @@ import { createHome, createMember, findHome } from '../db/queries'
 const homes = new Hono<{ Bindings: Env }>()
 
 const createHomeBody = z.object({
-  name: z.string().min(1, 'name is required'),
+  name: z.string().trim().min(1, 'name is required'),
 })
 
 const createMemberBody = z.object({
-  name: z.string().min(1, 'name is required'),
+  name: z.string().trim().min(1, 'name is required'),
 })
 
 homes.post(
@@ -41,8 +41,16 @@ homes.post(
     const home = await findHome(c.env.DB, homeId)
     if (!home) return c.json({ error: 'home not found' }, 404)
 
-    const member = await createMember(c.env.DB, homeId, name.trim())
-    return c.json(member, 201)
+    try {
+      const member = await createMember(c.env.DB, homeId, name.trim())
+      return c.json(member, 201)
+    } catch (err) {
+      const msg = (err as Error).message ?? ''
+      if (msg.includes('UNIQUE') || msg.includes('uq_member_name')) {
+        return c.json({ error: 'member already exists in this home' }, 409)
+      }
+      throw err
+    }
   },
 )
 
