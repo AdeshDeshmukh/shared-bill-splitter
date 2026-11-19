@@ -10,16 +10,17 @@ type Props = {
 }
 
 const C = {
-  bg2: '#2a1200',
-  border: '#3d1f00',
-  accent: '#f97316',
-  accentHover: '#ea6c0a',
-  textPrimary: '#f5e6d8',
-  textMuted: '#a07850',
-  green: '#4ade80',
-  greenBg: 'rgba(74,222,128,0.12)',
-  red: '#f87171',
-  pending: '#3d1f00',
+  bg: '#fbf9f6',
+  card: '#ffffff',
+  bgSubtle: '#faf7f3',
+  border: '#e8e2d8',
+  accent: '#e11d48',
+  accentSoft: 'rgba(225, 29, 72, 0.08)',
+  textPrimary: '#1c1917',
+  textMuted: '#78716c',
+  green: '#059669',
+  greenBg: 'rgba(5, 150, 105, 0.08)',
+  red: '#dc2626',
 }
 
 function Avatar({ name }: { name: string }) {
@@ -35,15 +36,16 @@ function Avatar({ name }: { name: string }) {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 28,
-        height: 28,
+        width: 30,
+        height: 30,
         borderRadius: '50%',
-        background: C.accent,
-        color: '#1c0a00',
+        background: C.accentSoft,
+        color: C.accent,
         fontSize: 11,
         fontWeight: 700,
-        marginRight: 10,
+        marginRight: 12,
         flexShrink: 0,
+        border: '1px solid rgba(225, 29, 72, 0.2)',
       }}
     >
       {initials}
@@ -89,18 +91,25 @@ export function ShareRow({ homeId, billId, share, memberName }: Props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '10px 12px',
-        borderRadius: 6,
-        background: share.paidAt ? 'rgba(74,222,128,0.05)' : C.bg2,
-        border: `1px solid ${share.paidAt ? 'rgba(74,222,128,0.2)' : C.border}`,
-        marginBottom: 6,
+        padding: '12px 14px',
+        borderRadius: 8,
+        background: share.paidAt ? C.greenBg : C.bgSubtle,
+        border: `1px solid ${share.paidAt ? 'rgba(5, 150, 105, 0.2)' : C.border}`,
+        marginBottom: 8,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar name={displayName} />
         <div>
-          <span style={{ fontSize: 14, fontWeight: 500, color: C.textPrimary }}>{displayName}</span>
-          <span style={{ marginLeft: 12, fontWeight: 700, color: C.accent, fontSize: 14 }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: C.textPrimary }}>{displayName}</span>
+          <span
+            style={{
+              marginLeft: 12,
+              fontWeight: 700,
+              color: share.paidAt ? C.green : C.accent,
+              fontSize: 14,
+            }}
+          >
             {dollars(share.amountCents)}
           </span>
           {share.paidAt && (
@@ -108,12 +117,13 @@ export function ShareRow({ homeId, billId, share, memberName }: Props) {
               style={{
                 marginLeft: 10,
                 fontSize: 11,
-                fontWeight: 600,
+                fontWeight: 700,
                 color: C.green,
-                background: C.greenBg,
+                background: '#ffffff',
+                border: '1px solid rgba(5, 150, 105, 0.25)',
                 padding: '2px 8px',
-                borderRadius: 4,
-                letterSpacing: '0.03em',
+                borderRadius: 9999,
+                letterSpacing: '0.04em',
               }}
             >
               ✓ SETTLED
@@ -136,15 +146,16 @@ export function ShareRow({ homeId, billId, share, memberName }: Props) {
           }}
           disabled={mutation.isPending}
           style={{
-            padding: '6px 16px',
+            padding: '7px 16px',
             borderRadius: 6,
-            border: `1px solid ${mutation.isPending ? C.border : C.accent}`,
-            background: mutation.isPending ? C.pending : C.accent,
-            color: mutation.isPending ? C.textMuted : '#1c0a00',
+            border: 'none',
+            background: mutation.isPending ? '#e2dcd4' : C.accent,
+            color: mutation.isPending ? C.textMuted : '#ffffff',
             cursor: mutation.isPending ? 'not-allowed' : 'pointer',
             fontSize: 12,
             fontWeight: 700,
             letterSpacing: '0.04em',
+            boxShadow: mutation.isPending ? 'none' : '0 1px 2px rgba(225, 29, 72, 0.2)',
             flexShrink: 0,
           }}
         >

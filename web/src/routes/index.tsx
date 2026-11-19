@@ -10,14 +10,18 @@ export const Route = createFileRoute('/')({
 })
 
 const C = {
-  bg: '#1c0a00',
-  bg2: '#2a1200',
-  border: '#3d1f00',
-  accent: '#f97316',
-  textPrimary: '#f5e6d8',
-  textMuted: '#a07850',
-  green: '#4ade80',
-  red: '#f87171',
+  bg: '#fbf9f6',
+  card: '#ffffff',
+  bgSubtle: '#faf7f3',
+  border: '#e8e2d8',
+  borderInput: '#ded6ca',
+  accent: '#e11d48',
+  accentSoft: 'rgba(225, 29, 72, 0.08)',
+  textPrimary: '#1c1917',
+  textMuted: '#78716c',
+  green: '#059669',
+  greenBg: 'rgba(5, 150, 105, 0.08)',
+  red: '#dc2626',
 }
 
 function SectionCard({
@@ -30,10 +34,11 @@ function SectionCard({
   return (
     <div
       style={{
-        background: C.bg2,
+        background: C.card,
         border: `1px solid ${C.border}`,
-        borderRadius: 10,
-        padding: 20,
+        borderRadius: 12,
+        padding: 24,
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02)',
         ...style,
       }}
     >
@@ -46,9 +51,9 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2
       style={{
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 700,
-        letterSpacing: '0.1em',
+        letterSpacing: '0.08em',
         color: C.textMuted,
         margin: '0 0 16px 0',
         textTransform: 'uppercase',
@@ -132,10 +137,10 @@ function HomePage() {
 
   const inputStyle: React.CSSProperties = {
     flex: '1 1 200px',
-    padding: '9px 13px',
-    borderRadius: 6,
-    border: `1px solid ${C.border}`,
-    background: C.bg,
+    padding: '10px 14px',
+    borderRadius: 8,
+    border: `1px solid ${C.borderInput}`,
+    background: '#ffffff',
     color: C.textPrimary,
     fontSize: 14,
     outline: 'none',
@@ -154,53 +159,66 @@ function HomePage() {
       <header
         style={{
           borderBottom: `1px solid ${C.border}`,
+          background: '#ffffff',
           padding: '0 32px',
-          height: 56,
+          height: 60,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 6,
+              width: 32,
+              height: 32,
+              borderRadius: 8,
               background: C.accent,
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 15,
+              fontSize: 16,
+              color: '#ffffff',
             }}
           >
-            ⚡
+            ✦
           </span>
-          <span style={{ fontWeight: 700, fontSize: 16, color: C.textPrimary }}>
+          <span style={{ fontWeight: 700, fontSize: 17, color: C.textPrimary }}>
             Shared Bill Splitter
           </span>
         </div>
         {homeId && (
-          <span style={{ fontSize: 11, color: C.textMuted, fontFamily: 'monospace' }}>
-            HOME {homeId.slice(0, 8)}…
+          <span
+            style={{
+              fontSize: 12,
+              color: C.accent,
+              background: C.accentSoft,
+              padding: '4px 10px',
+              borderRadius: 6,
+              fontWeight: 600,
+              fontFamily: 'monospace',
+            }}
+          >
+            HOME: {homeId.slice(0, 8)}…
           </span>
         )}
       </header>
 
-      <main style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px' }}>
+      <main style={{ maxWidth: 860, margin: '0 auto', padding: '36px 20px' }}>
         {/* Page title */}
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 30, fontWeight: 700, margin: '0 0 6px 0', color: C.textPrimary }}>
-            Expense <span style={{ color: C.accent }}>Dashboard</span>
+          <h1 style={{ fontSize: 32, fontWeight: 800, margin: '0 0 6px 0', color: C.textPrimary }}>
+            Household <span style={{ color: C.accent }}>Expenses</span>
           </h1>
-          <p style={{ color: C.textMuted, fontSize: 14, margin: 0 }}>
+          <p style={{ color: C.textMuted, fontSize: 15, margin: 0 }}>
             Integer-cent splits · Atomic payments · Idempotency-safe settlement
           </p>
         </div>
 
         {/* Home selector */}
         <SectionCard style={{ marginBottom: 24 }}>
-          <SectionHeading>Active Home</SectionHeading>
+          <SectionHeading>Active Household</SectionHeading>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <input
               id="home-id-input"
@@ -214,15 +232,15 @@ function HomePage() {
               type="button"
               onClick={() => setHomeId(inputHomeId.trim())}
               style={{
-                padding: '9px 18px',
-                borderRadius: 6,
-                border: `1px solid ${C.accent}`,
-                background: 'transparent',
-                color: C.accent,
+                padding: '10px 20px',
+                borderRadius: 8,
+                border: `1px solid ${C.borderInput}`,
+                background: '#ffffff',
+                color: C.textPrimary,
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: 'pointer',
-                letterSpacing: '0.04em',
+                letterSpacing: '0.02em',
               }}
             >
               LOAD HOME
@@ -232,18 +250,19 @@ function HomePage() {
               onClick={handleCreateDemoHome}
               disabled={isCreatingDemo}
               style={{
-                padding: '9px 18px',
-                borderRadius: 6,
-                border: `1px solid ${C.border}`,
-                background: isCreatingDemo ? C.border : C.accent,
-                color: isCreatingDemo ? C.textMuted : '#1c0a00',
+                padding: '10px 20px',
+                borderRadius: 8,
+                border: 'none',
+                background: isCreatingDemo ? '#e8e2d8' : C.accent,
+                color: isCreatingDemo ? C.textMuted : '#ffffff',
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: isCreatingDemo ? 'not-allowed' : 'pointer',
-                letterSpacing: '0.04em',
+                letterSpacing: '0.02em',
+                boxShadow: isCreatingDemo ? 'none' : '0 2px 4px rgba(225, 29, 72, 0.25)',
               }}
             >
-              {isCreatingDemo ? 'CREATING…' : '⚡ SEED DEMO HOME'}
+              {isCreatingDemo ? 'CREATING…' : '✦ SEED DEMO HOME'}
             </button>
           </div>
           {createError && (
@@ -256,19 +275,19 @@ function HomePage() {
             {/* Summary metric cards */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
               {[
-                { label: 'TOTAL BILLS', value: totalBills, color: C.accent },
+                { label: 'TOTAL BILLS', value: totalBills, color: C.textPrimary },
                 {
                   label: 'TOTAL VALUE',
                   value: new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                   }).format(totalCents / 100),
-                  color: C.textPrimary,
+                  color: C.accent,
                 },
                 {
                   label: 'SHARES SETTLED',
                   value: `${paidShares} / ${totalShares}`,
-                  color: paidShares === totalShares && totalShares > 0 ? C.green : C.accent,
+                  color: paidShares === totalShares && totalShares > 0 ? C.green : C.textPrimary,
                 },
                 {
                   label: 'MEMBERS',
@@ -280,24 +299,25 @@ function HomePage() {
                   key={m.label}
                   style={{
                     flex: '1 1 140px',
-                    background: C.bg2,
+                    background: C.card,
                     border: `1px solid ${C.border}`,
-                    borderRadius: 10,
-                    padding: '16px 20px',
+                    borderRadius: 12,
+                    padding: '18px 20px',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
                   }}
                 >
                   <div
                     style={{
-                      fontSize: 10,
+                      fontSize: 11,
                       color: C.textMuted,
                       fontWeight: 700,
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                       marginBottom: 8,
                     }}
                   >
                     {m.label}
                   </div>
-                  <div style={{ fontSize: 24, fontWeight: 700, color: m.color }}>{m.value}</div>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: m.color }}>{m.value}</div>
                 </div>
               ))}
             </div>
@@ -333,15 +353,16 @@ function HomePage() {
                 <button
                   type="submit"
                   style={{
-                    padding: '9px 20px',
-                    borderRadius: 6,
+                    padding: '10px 22px',
+                    borderRadius: 8,
                     border: 'none',
                     background: C.accent,
-                    color: '#1c0a00',
+                    color: '#ffffff',
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: 'pointer',
-                    letterSpacing: '0.04em',
+                    letterSpacing: '0.02em',
+                    boxShadow: '0 2px 4px rgba(225, 29, 72, 0.25)',
                   }}
                 >
                   SPLIT & ADD
@@ -360,26 +381,27 @@ function HomePage() {
             style={{
               textAlign: 'center',
               padding: '64px 24px',
-              borderRadius: 10,
+              borderRadius: 12,
               border: `1px dashed ${C.border}`,
+              background: C.card,
               color: C.textMuted,
             }}
           >
-            <div style={{ fontSize: 40, marginBottom: 16 }}>⚡</div>
+            <div style={{ fontSize: 44, marginBottom: 16 }}>✦</div>
             <p
               style={{
-                fontSize: 16,
+                fontSize: 17,
                 margin: '0 0 10px 0',
                 color: C.textPrimary,
-                fontWeight: 600,
+                fontWeight: 700,
               }}
             >
-              No home loaded yet
+              No household loaded yet
             </p>
             <p style={{ fontSize: 14, margin: 0, color: C.textMuted }}>
               Enter an existing Home ID above, or click{' '}
-              <strong style={{ color: C.accent }}>⚡ SEED DEMO HOME</strong> to auto-populate sample
-              data.
+              <strong style={{ color: C.accent }}>✦ SEED DEMO HOME</strong> to auto-populate sample
+              bills and members.
             </p>
           </div>
         )}

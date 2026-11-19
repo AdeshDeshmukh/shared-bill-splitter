@@ -8,13 +8,16 @@ type Props = {
 }
 
 const C = {
-  bg2: '#2a1200',
-  border: '#3d1f00',
-  accent: '#f97316',
-  textPrimary: '#f5e6d8',
-  textMuted: '#a07850',
-  green: '#4ade80',
-  red: '#f87171',
+  card: '#ffffff',
+  bgSubtle: '#faf7f3',
+  border: '#e8e2d8',
+  accent: '#e11d48',
+  textPrimary: '#1c1917',
+  textMuted: '#78716c',
+  green: '#059669',
+  greenBg: 'rgba(5, 150, 105, 0.08)',
+  red: '#dc2626',
+  redBg: 'rgba(220, 38, 38, 0.08)',
 }
 
 export function BillList({ homeId, memberMap }: Props) {
@@ -33,9 +36,9 @@ export function BillList({ homeId, memberMap }: Props) {
       <div
         style={{
           padding: 12,
-          background: 'rgba(248,113,113,0.1)',
-          border: '1px solid rgba(248,113,113,0.3)',
-          borderRadius: 6,
+          background: C.redBg,
+          border: '1px solid rgba(220, 38, 38, 0.2)',
+          borderRadius: 8,
           color: C.red,
           fontSize: 14,
         }}
@@ -50,9 +53,10 @@ export function BillList({ homeId, memberMap }: Props) {
       <div
         style={{
           textAlign: 'center',
-          padding: '32px 20px',
-          borderRadius: 8,
+          padding: '36px 20px',
+          borderRadius: 10,
           border: `1px dashed ${C.border}`,
+          background: C.card,
           color: C.textMuted,
           fontSize: 14,
         }}
@@ -74,9 +78,10 @@ export function BillList({ homeId, memberMap }: Props) {
           <div
             key={bill.id}
             style={{
-              borderRadius: 10,
-              border: `1px solid ${allPaid ? 'rgba(74,222,128,0.25)' : C.border}`,
-              background: C.bg2,
+              borderRadius: 12,
+              border: `1px solid ${allPaid ? 'rgba(5, 150, 105, 0.25)' : C.border}`,
+              background: C.card,
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02)',
               overflow: 'hidden',
             }}
           >
@@ -86,7 +91,7 @@ export function BillList({ homeId, memberMap }: Props) {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
-                padding: '16px 18px 12px',
+                padding: '18px 20px 14px',
                 borderBottom: `1px solid ${C.border}`,
               }}
             >
@@ -96,20 +101,23 @@ export function BillList({ homeId, memberMap }: Props) {
                   {allPaid && (
                     <span
                       style={{
-                        fontSize: 10,
+                        fontSize: 11,
                         fontWeight: 700,
                         color: C.green,
-                        background: 'rgba(74,222,128,0.12)',
+                        background: C.greenBg,
+                        border: '1px solid rgba(5, 150, 105, 0.25)',
                         padding: '2px 8px',
-                        borderRadius: 4,
-                        letterSpacing: '0.06em',
+                        borderRadius: 9999,
+                        letterSpacing: '0.04em',
                       }}
                     >
                       FULLY SETTLED
                     </span>
                   )}
                 </div>
-                <span style={{ fontSize: 11, color: C.textMuted }}>ID: {bill.id.slice(0, 8)}…</span>
+                <span style={{ fontSize: 12, color: C.textMuted, fontFamily: 'monospace' }}>
+                  ID: {bill.id.slice(0, 8)}…
+                </span>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 20, fontWeight: 700, color: C.accent }}>
@@ -118,19 +126,25 @@ export function BillList({ homeId, memberMap }: Props) {
                     currency: 'USD',
                   }).format(bill.totalCents / 100)}
                 </div>
-                <div style={{ fontSize: 11, color: C.textMuted, marginTop: 2 }}>
-                  {paidCount}/{totalCount} shares settled
+                <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2 }}>
+                  {paidCount} of {totalCount} settled
                 </div>
               </div>
             </div>
 
             {/* Progress bar */}
-            <div style={{ padding: '10px 18px', borderBottom: `1px solid ${C.border}` }}>
+            <div
+              style={{
+                padding: '12px 20px',
+                borderBottom: `1px solid ${C.border}`,
+                background: C.bgSubtle,
+              }}
+            >
               <div
                 style={{
-                  height: 4,
-                  borderRadius: 2,
-                  background: C.border,
+                  height: 6,
+                  borderRadius: 3,
+                  background: '#e8e2d8',
                   overflow: 'hidden',
                 }}
               >
@@ -139,15 +153,19 @@ export function BillList({ homeId, memberMap }: Props) {
                     height: '100%',
                     width: `${pct}%`,
                     background: allPaid ? C.green : C.accent,
-                    borderRadius: 2,
+                    borderRadius: 3,
                     transition: 'width 0.3s ease',
                   }}
                 />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                <span style={{ fontSize: 10, color: C.textMuted }}>Settlement progress</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+                <span style={{ fontSize: 11, color: C.textMuted }}>Settlement progress</span>
                 <span
-                  style={{ fontSize: 10, color: allPaid ? C.green : C.accent, fontWeight: 700 }}
+                  style={{
+                    fontSize: 11,
+                    color: allPaid ? C.green : C.accent,
+                    fontWeight: 700,
+                  }}
                 >
                   {pct}%
                 </span>
@@ -155,7 +173,7 @@ export function BillList({ homeId, memberMap }: Props) {
             </div>
 
             {/* Shares */}
-            <div style={{ padding: '12px 18px' }}>
+            <div style={{ padding: '16px 20px 10px' }}>
               {bill.shares.map((share) => (
                 <ShareRow
                   key={share.id}

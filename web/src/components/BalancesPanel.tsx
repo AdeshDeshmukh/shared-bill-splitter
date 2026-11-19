@@ -4,14 +4,18 @@ import { api } from '../api/client'
 type Props = { homeId: string }
 
 const C = {
-  bg: '#1c0a00',
-  bg2: '#2a1200',
-  border: '#3d1f00',
-  accent: '#f97316',
-  textPrimary: '#f5e6d8',
-  textMuted: '#a07850',
-  green: '#4ade80',
-  red: '#f87171',
+  bg: '#fbf9f6',
+  card: '#ffffff',
+  bgSubtle: '#faf7f3',
+  border: '#e8e2d8',
+  accent: '#e11d48',
+  accentSoft: 'rgba(225, 29, 72, 0.08)',
+  textPrimary: '#1c1917',
+  textMuted: '#78716c',
+  green: '#059669',
+  greenBg: 'rgba(5, 150, 105, 0.08)',
+  red: '#dc2626',
+  redBg: 'rgba(220, 38, 38, 0.08)',
 }
 
 function Avatar({ name }: { name: string }) {
@@ -27,15 +31,16 @@ function Avatar({ name }: { name: string }) {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 32,
-        height: 32,
+        width: 34,
+        height: 34,
         borderRadius: '50%',
-        background: C.accent,
-        color: '#1c0a00',
+        background: C.accentSoft,
+        color: C.accent,
         fontSize: 12,
         fontWeight: 700,
-        marginRight: 10,
+        marginRight: 12,
         flexShrink: 0,
+        border: '1px solid rgba(225, 29, 72, 0.2)',
       }}
     >
       {initials}
@@ -59,9 +64,9 @@ export function BalancesPanel({ homeId }: Props) {
       <div
         style={{
           padding: 12,
-          background: 'rgba(248,113,113,0.1)',
-          border: '1px solid rgba(248,113,113,0.3)',
-          borderRadius: 6,
+          background: C.redBg,
+          border: '1px solid rgba(220, 38, 38, 0.2)',
+          borderRadius: 8,
           color: C.red,
           fontSize: 14,
         }}
@@ -93,17 +98,18 @@ export function BalancesPanel({ homeId }: Props) {
           {
             label: 'MEMBERS',
             value: data.balances.length,
-            color: C.accent,
+            color: C.textPrimary,
           },
           {
-            label: 'TOTAL OWED',
-            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-              totalOwed / 100,
-            ),
-            color: totalOwed > 0 ? C.red : C.green,
+            label: 'TOTAL OUTSTANDING',
+            value: new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+            }).format(totalOwed / 100),
+            color: totalOwed > 0 ? C.accent : C.green,
           },
           {
-            label: 'SETTLED',
+            label: 'FULLY SETTLED',
             value: `${settled} / ${data.balances.length}`,
             color: C.green,
           },
@@ -112,7 +118,7 @@ export function BalancesPanel({ homeId }: Props) {
             key={m.label}
             style={{
               flex: '1 1 100px',
-              background: C.bg2,
+              background: C.bgSubtle,
               border: `1px solid ${C.border}`,
               borderRadius: 8,
               padding: '14px 18px',
@@ -120,10 +126,10 @@ export function BalancesPanel({ homeId }: Props) {
           >
             <div
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 color: C.textMuted,
                 fontWeight: 700,
-                letterSpacing: '0.08em',
+                letterSpacing: '0.06em',
                 marginBottom: 6,
               }}
             >
@@ -137,7 +143,7 @@ export function BalancesPanel({ homeId }: Props) {
       {/* Member rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {data.balances.map((b) => {
-          const settled = b.outstandingCents === 0
+          const isSettled = b.outstandingCents === 0
           return (
             <div
               key={b.memberId}
@@ -145,29 +151,30 @@ export function BalancesPanel({ homeId }: Props) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '12px 14px',
+                padding: '12px 16px',
                 borderRadius: 8,
-                background: settled ? 'rgba(74,222,128,0.05)' : C.bg2,
-                border: `1px solid ${settled ? 'rgba(74,222,128,0.2)' : C.border}`,
+                background: isSettled ? C.greenBg : C.bgSubtle,
+                border: `1px solid ${isSettled ? 'rgba(5, 150, 105, 0.2)' : C.border}`,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar name={b.name} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: C.textPrimary }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: C.textPrimary }}>
                   {b.name}
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                {settled && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {isSettled && (
                   <span
                     style={{
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: 700,
                       color: C.green,
-                      background: 'rgba(74,222,128,0.12)',
+                      background: '#ffffff',
+                      border: '1px solid rgba(5, 150, 105, 0.25)',
                       padding: '2px 8px',
-                      borderRadius: 4,
-                      letterSpacing: '0.06em',
+                      borderRadius: 9999,
+                      letterSpacing: '0.04em',
                     }}
                   >
                     ALL CLEAR
@@ -177,7 +184,7 @@ export function BalancesPanel({ homeId }: Props) {
                   style={{
                     fontSize: 16,
                     fontWeight: 700,
-                    color: b.outstandingCents > 0 ? C.red : C.green,
+                    color: b.outstandingCents > 0 ? C.accent : C.green,
                     minWidth: 80,
                     textAlign: 'right',
                   }}
