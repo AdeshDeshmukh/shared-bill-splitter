@@ -233,3 +233,87 @@ export async function getBalances(db: D1Database, homeId: string): Promise<Balan
     outstandingCents: r.outstanding_cents,
   }))
 }
+
+// ─── Shares & Payments ────────────────────────────────────────────────────────
+
+export async function findShare(db: D1Database, shareId: string): Promise<Share | null> {
+  const row = await db
+    .prepare('SELECT id, bill_id, member_id, amount_cents, paid_at FROM shares WHERE id = ?')
+    .bind(shareId)
+    .first<{
+      id: string
+      bill_id: string
+      member_id: string
+      amount_cents: number
+      paid_at: string | null
+    }>()
+
+  return row
+    ? {
+        id: row.id,
+        billId: row.bill_id,
+        memberId: row.member_id,
+        amountCents: row.amount_cents,
+        paidAt: row.paid_at,
+      }
+    : null
+}
+
+export async function findBill(db: D1Database, billId: string): Promise<Bill | null> {
+  const row = await db
+    .prepare('SELECT id, home_id, title, total_cents FROM bills WHERE id = ?')
+    .bind(billId)
+    .first<{
+      id: string
+      home_id: string
+      title: string
+      total_cents: number
+    }>()
+
+  return row
+    ? {
+        id: row.id,
+        homeId: row.home_id,
+        title: row.title,
+        totalCents: row.total_cents,
+      }
+    : null
+}
+
+export async function findIdempotencyKey(
+  db: D1Database,
+  shareId: string,
+  key: string,
+): Promise<boolean> {
+  const row = await db
+    .prepare('SELECT 1 FROM idempotency_keys WHERE share_id = ? AND idempotency_key = ?')
+    .bind(shareId, key)
+    .first()
+
+  return row !== null
+}
+
+export async function payShare(
+  db: D1Database,
+  shareId: string,
+  idempotencyKey: string,
+): Promise<{ changed: boolean; paidAt: string }> {
+  const paidAt = new Date().toISOString()
+
+  const updateResult = await db
+    .prepare('UPDATE shares SET paid_at = ? WHERE id = ? AND paid_at IS NULL')
+    .bind(paidAt, shareId)
+    .run()
+
+  const changed = (updateResult.meta.changes ?? 0) > 0
+  if (!changed) {
+    return { changed: false, paidAt }
+  }
+
+  await db
+    .prepare('INSERT OR IGNORE INTO idempotency_keys (share_id, idempotency_key) VALUES (?, ?)')
+    .bind(shareId, idempotencyKey)
+    .run()
+
+  return { changed: true, paidAt }
+}
