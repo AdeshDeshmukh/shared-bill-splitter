@@ -155,3 +155,19 @@ You must understand every line you submit. We check this with your video and in 
 5. Paste the repository link and the video link in the application form.
 
 We will run `pnpm install && pnpm check && pnpm typecheck && pnpm test` on your repository.
+
+---
+
+## Decisions
+
+### 1. Integer cents for all money
+
+All monetary values are stored as `INTEGER` in the database and validated as positive integers at the API boundary (`Number.isInteger(v) && v > 0`). I considered using `REAL` with rounding at display time, but floating-point arithmetic is non-deterministic — `0.1 + 0.2 !== 0.3` in both JavaScript and SQLite's `REAL` type. With integer cents, the split always adds up exactly: `splitCents(1000, 3)` returns `[334, 333, 333]` whose sum is provably 1000. No rounding error is possible.
+
+### 2. Database-backed idempotency keys
+
+Idempotency keys are stored in a dedicated `idempotency_keys` table with a `UNIQUE (share_id, idempotency_key)` constraint. I considered an in-memory `Map`, but Cloudflare Workers run in multiple isolates simultaneously — each isolate has its own memory, so an in-memory map is per-instance. Two concurrent requests to different instances would both see an empty map and both execute the payment. The database is the only shared state, so the `UNIQUE` constraint is the only correct place to enforce uniqueness.
+
+### 3. Conditional UPDATE for race-safe payment
+
+Payment uses `UPDATE shares SET paid_at = ? WHERE id = ? AND paid_at IS NULL`. D1 serializes writes, so this is atomic — only one concurrent request can match the `WHERE paid_at IS NULL` predicate. If `meta.changes === 0`, the row was already paid by a concurrent request and the route returns 409. I considered a `SELECT` then `UPDATE` pattern but that has a TOCTOU race — two requests can both read `paid_at = NULL` and both proceed to update. The conditional `UPDATE` eliminates the race entirely.
